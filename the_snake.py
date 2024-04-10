@@ -6,7 +6,7 @@ import pygame
 pygame.init()
 
 # Константы для размеров поля и сетки:
-SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
+SCREEN_WIDTH, SCREEN_HEIGHT = 200, 200
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
@@ -59,7 +59,7 @@ class GameObject:
         for i in range(1, GRID_HEIGHT):
             pygame.draw.line(
                 screen,
-                self.body_color,
+                LINE_COLOR,
                 (0, i * GRID_SIZE),
                 (SCREEN_WIDTH, i * GRID_SIZE),
                 3
@@ -69,7 +69,7 @@ class GameObject:
         for i in range(1, GRID_WIDTH):
             pygame.draw.line(
                 screen,
-                self.body_color,
+                LINE_COLOR,
                 (i * GRID_SIZE, 0),
                 (i * GRID_SIZE, SCREEN_HEIGHT),
                 3
@@ -194,7 +194,7 @@ def handle_keys(snake: Snake) -> None:
 def main() -> None:
     """Описыват основную логику игры."""
     # Объявляем экземпляры классов.
-    game_object = GameObject(CENTRAL_POINT, LINE_COLOR)
+    game_object = GameObject(CENTRAL_POINT, (50, 50, 50))
     apple = Apple(CENTRAL_POINT, APPLE_COLOR)
     snake = Snake(1, [CENTRAL_POINT], UP, None, SNAKE_COLOR)
     while True:
