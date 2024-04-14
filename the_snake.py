@@ -163,7 +163,6 @@ class Snake(GameObject):
         self.positions = self.positions[:1]
 
 
-# Стоил ли данную функцию занести в класс Snake, как статический метод?
 def handle_keys(snake: Snake) -> None:
     """Функция обрабатывает закрытие игрового окна и
     нажатие клавиш для передачи направления движения.
