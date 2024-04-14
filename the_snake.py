@@ -38,10 +38,18 @@ APPLE_COLOR: COLOR = (255, 0, 0)
 SNAKE_COLOR: COLOR = (0, 255, 0)
 TEXT_COLOT: COLOR = (3, 252, 190)
 
+COORDINATES_EXIT: POINTER = (0, 0)
+COORDINATES_SPEED: POINTER = (0, 20)
+COORDINATES_MAX_LENGTH: POINTER = (0, 40)
+
+TEXT_EXIT: str = 'Для выхода из игры нажмите Х в правом верхнем углу'
+TEXT_SPEED: str = 'Текущая скорость: '
+TEXT_MAX_LENGTH: str = 'Максимальная длина: '
+
 SPEED: int = 20
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
-pg.display.set_caption(f"Змейка; Скорость: {SPEED}; Выход 'X' ->")
+pg.display.set_caption('Змейка')
 clock = pg.time.Clock()
 
 
@@ -49,7 +57,7 @@ class GameObject:
     """Класс - родитель, от которого наследуются друие игровые объекты."""
 
     def __init__(self, position: POINTER = CENTRAL_POINT,
-                 body_color: COLOR = LINE_COLOR):
+                 body_color: COLOR = LINE_COLOR) -> None:
         self.position = position
         self.body_color = body_color
 
@@ -62,12 +70,12 @@ class Apple(GameObject):
     """Класс описывает яблоко и действия с ним."""
 
     def __init__(self, position: POINTER = CENTRAL_POINT,
-                 body_color: COLOR = APPLE_COLOR):
+                 body_color: COLOR = APPLE_COLOR) -> None:
         super().__init__(position, body_color)
         self.position = position
         self.body_color = body_color
 
-    def randomize_position(self, snake_positions) -> None:
+    def randomize_position(self, snake_positions: list[POINTER]) -> None:
         """Устанавливает случайное положение яблока на игровом поле."""
         while True:
             apple_position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
@@ -90,7 +98,7 @@ class Snake(GameObject):
                  position: POINTER = CENTRAL_POINT,
                  direction: POINTER = RIGHT,
                  next_direction: POINTER = RIGHT,
-                 body_color=SNAKE_COLOR):
+                 body_color=SNAKE_COLOR) -> None:
         super().__init__(position, body_color)
         self.length = length
         self.positions = [position]
@@ -155,6 +163,7 @@ class Snake(GameObject):
         self.positions = self.positions[:1]
 
 
+# Стоил ли данную функцию занести в класс Snake, как статический метод?
 def handle_keys(snake: Snake) -> None:
     """Функция обрабатывает закрытие игрового окна и
     нажатие клавиш для передачи направления движения.
@@ -170,10 +179,23 @@ def handle_keys(snake: Snake) -> None:
             )
 
 
+def draw_information(max_length: int) -> None:
+    """Указание полезной информации об игре."""
+    info_font = pg.font.Font(None, 20)
+    text_speed = f'{TEXT_SPEED}{SPEED}'
+    text_max_length = f'{TEXT_MAX_LENGTH}{max_length}'
+    information_tests = (TEXT_EXIT, text_speed, text_max_length)
+    coordinates = {COORDINATES_EXIT, COORDINATES_SPEED, COORDINATES_MAX_LENGTH}
+    for text, coordanate in zip(information_tests, coordinates):
+        text_output = info_font.render(text, False, TEXT_COLOT)
+        screen.blit(text_output, coordanate)
+
+
 def main() -> None:
     """Описыват основную логику игры."""
     apple = Apple(CENTRAL_POINT, APPLE_COLOR)
     snake = Snake(INITIAL_LENGH_SNAKE, CENTRAL_POINT, UP, RIGHT, SNAKE_COLOR)
+    max_length = INITIAL_LENGH_SNAKE
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
@@ -187,9 +209,12 @@ def main() -> None:
         if (snake.length > 2
                 and snake.get_head_position() in snake.positions[1:]):
             snake.reset()
-            screen.fill(BOARD_BACKGROUND_COLOR)
+        if max_length < snake.length:
+            max_length = snake.length
+        screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
         apple.draw()
+        draw_information(max_length)
         pg.display.update()
 
 
